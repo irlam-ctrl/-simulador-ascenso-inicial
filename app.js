@@ -3,7 +3,8 @@ let pool=[],i=0,chosen=null,mode='practice',seconds=0,tick=null;
 let S=JSON.parse(localStorage.getItem(K)||'{"fav":[],"status":{}}');
 if(!S.attempts)S.attempts={};
 
-function save(){localStorage.setItem(K,JSON.stringify(S))}
+function save(){localStorage.setItem(K,JSON.stringify(S));if(window.syncProgress)setTimeout(()=>window.syncProgress(),0)}
+window.reloadStudyState=()=>{S=JSON.parse(localStorage.getItem(K)||'{"fav":[],"status":{},"attempts":{}}');if(!S.attempts)S.attempts={};counts();if(!$('#quiz').classList.contains('hidden'))render()}
 function rec(id){
   const v=S.status[id];
   if(typeof v==='string') return {result:v,legacy:true};

@@ -26,3 +26,12 @@ V4.3 corrección de compatibilidad:
 - Las preguntas falladas en versiones anteriores ya no muestran la clave correcta.
 - Un fallo antiguo se presenta únicamente como “INCORRECTA · INTÉNTALO NUEVAMENTE”.
 - No es necesario borrar el progreso existente.
+
+
+V5:
+- Inicio de sesión con Supabase Auth.
+- Guardado local inmediato + sincronización con la nube.
+- Recuperación del progreso al iniciar sesión en otro dispositivo.
+- Migración del progreso local existente en el primer inicio de sesión.
+- Sincroniza estados, intentos, favoritas y alternativa seleccionada.
+- RLS mantiene cada progreso asociado al usuario autenticado.

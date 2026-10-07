@@ -39,3 +39,6 @@
 /* V4.3 — reintento pedagógico */
 .option.tried:disabled{opacity:1;text-decoration:line-through;border-style:dashed}
 .answerStatus.status-wrong .statusSymbol{letter-spacing:2px}
+
+/* V5 cloud sync */
+.cloudCard{margin-bottom:18px}.cloudHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.cloudHead h2{margin:.15rem 0 .5rem}.cloudText{color:#73776e;line-height:1.5}.cloudCard input{box-sizing:border-box;width:100%;font:inherit;padding:16px;border:1px solid #cbc8bc;border-radius:12px;background:#fff;margin-top:8px}.syncBadge{white-space:nowrap;border:1px solid #b8b5aa;border-radius:999px;padding:7px 10px;font:700 12px system-ui;color:#555;background:#fff}.syncBadge.synced{border-style:solid;color:#143f34}.syncBadge.pending{border-style:dashed;color:#222}.cloudActions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cloudMsg{min-height:1.3em;font-size:14px}.cloudCard button{margin-top:10px}
