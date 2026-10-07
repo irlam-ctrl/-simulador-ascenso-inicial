@@ -79,10 +79,10 @@ function render(){
   $('#progress').textContent=`${i+1} de ${pool.length}`;$('#meta').textContent=`Prueba ${x.year} · Pregunta ${x.number} · ${x.topic} · ${x.cycle}`;
   $('#question').textContent=x.q;
   const triedWrong=new Set(attemptsOf(x.id).filter(a=>!a.correct).map(a=>a.selected));
-  $('#options').innerHTML=x.o.map((v,n)=>`<button class="option ${triedWrong.has(n)?'wrong tried':''}" data-n="${n}" ${triedWrong.has(n)?'disabled':''}><b>${'ABC'[n]}.</b> ${v}</button>`).join('');
+  $('#options').innerHTML=x.o.map((v,n)=>`<button class="option ${triedWrong.has(n)?'wrong tried':''}" data-n="${n}"><b>${'ABC'[n]}.</b> ${v}</button>`).join('');
   $('#check').disabled=true;$('#check').classList.remove('hidden');$('#feedback').classList.add('hidden');$('#next').classList.add('hidden');
   $('#fav').textContent=S.fav.includes(x.id)?'★':'☆';setBanner(x);
-  document.querySelectorAll('.option:not(:disabled)').forEach(b=>b.onclick=()=>{document.querySelectorAll('.option').forEach(z=>z.classList.remove('selected'));b.classList.add('selected');chosen=+b.dataset.n;$('#check').disabled=false});
+  document.querySelectorAll('.option').forEach(b=>b.onclick=()=>{document.querySelectorAll('.option').forEach(z=>z.classList.remove('selected'));b.classList.add('selected');chosen=+b.dataset.n;$('#check').disabled=false});
   updateNavigator();
 }
 function start(exam){
@@ -107,7 +107,7 @@ $('#check').onclick=()=>{
   }else{
     S.status[x.id]={result:'wrong',selected:chosen};
     save();
-    const b=document.querySelector(`.option[data-n="${chosen}"]`);if(b){b.classList.add('wrong','tried');b.disabled=true}
+    const b=document.querySelector(`.option[data-n="${chosen}"]`);if(b){b.classList.add('wrong','tried')}
     document.querySelectorAll('.option').forEach(z=>z.classList.remove('selected'));
     chosen=null;$('#check').disabled=true;
     $('#feedback').innerHTML='<b>Incorrecta ✕</b><br>Vuelve a leer la pregunta y prueba otra alternativa. La clave y la explicación se mostrarán cuando encuentres la respuesta correcta.';

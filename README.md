@@ -28,10 +28,13 @@ V4.3 corrección de compatibilidad:
 - No es necesario borrar el progreso existente.
 
 
-V5:
+V5.1:
 - Inicio de sesión con Supabase Auth.
 - Guardado local inmediato + sincronización con la nube.
 - Recuperación del progreso al iniciar sesión en otro dispositivo.
 - Migración del progreso local existente en el primer inicio de sesión.
 - Sincroniza estados, intentos, favoritas y alternativa seleccionada.
 - RLS mantiene cada progreso asociado al usuario autenticado.
+
+
+V5.1: corrige reintentos tras respuesta incorrecta y muestra segundos en la hora de sincronización.
