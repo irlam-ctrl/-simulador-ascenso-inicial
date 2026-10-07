@@ -60,10 +60,18 @@ function jumpOfficial(d){const x=pool[i],y=selectedYear();if(!x||!y)return;const
 
 function setBanner(x){
   const b=$('#answerStatus'),s=statusOf(x.id);
-  if(s==='correct'&&hadWrong(x.id)){b.innerHTML='<span class="statusSymbol">✕✓</span><strong>FALLADA · RESUELTA POSTERIORMENTE</strong>';b.className='answerStatus status-wrong'}
-  else if(s==='correct'){b.innerHTML='<span class="statusSymbol">✓</span><strong>YA RESPONDIDA · CORRECTA</strong>';b.className='answerStatus status-correct'}
-  else if(s==='wrong'){b.innerHTML='<span class="statusSymbol">✕</span><strong>INCORRECTA · INTÉNTALO NUEVAMENTE</strong>';b.className='answerStatus status-wrong'}
-  else{b.textContent='';b.className='answerStatus hidden'}
+  if(s==='correct'&&hadWrong(x.id)){
+    b.innerHTML='<span class="statusSymbol">✕✓</span><strong>FALLADA · RESUELTA POSTERIORMENTE</strong>';
+    b.className='answerStatus status-wrong';
+  }else if(s==='correct'){
+    b.innerHTML='<span class="statusSymbol">✓</span><strong>YA RESPONDIDA · CORRECTA</strong>';
+    b.className='answerStatus status-correct';
+  }else if(s==='wrong'){
+    b.innerHTML='<span class="statusSymbol">✕</span><strong>INCORRECTA · INTÉNTALO NUEVAMENTE</strong>';
+    b.className='answerStatus status-wrong';
+  }else{
+    b.textContent='';b.className='answerStatus hidden';
+  }
 }
 function render(){
   const x=pool[i];if(!x)return;chosen=null;

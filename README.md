@@ -21,3 +21,8 @@ V4.3:
 - Las alternativas falladas quedan marcadas/deshabilitadas durante el reintento.
 - Una pregunta fallada y luego resuelta continúa en Falladas como material de refuerzo.
 - Se registra historial de intentos desde V4.3.
+
+V4.3 corrección de compatibilidad:
+- Las preguntas falladas en versiones anteriores ya no muestran la clave correcta.
+- Un fallo antiguo se presenta únicamente como “INCORRECTA · INTÉNTALO NUEVAMENTE”.
+- No es necesario borrar el progreso existente.
