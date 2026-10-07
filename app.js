@@ -99,8 +99,6 @@ function updateNavigator(){
   const pos=i+1,total=pool.length;
   $('#progress').textContent=`${pos} de ${total}`;
   nav.classList.remove('hidden');
-  $('#currentOfficial').textContent=pos;
-  $('#totalOfficial').textContent=total;
   $('#prevQ').disabled=i===0;
   $('#nextQ').disabled=i===total-1;
 
