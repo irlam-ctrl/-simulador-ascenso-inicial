@@ -39,9 +39,7 @@ function attemptsOf(id){return S.attempts[id]||[]}
 function hadWrong(id){return statusOf(id)==='wrong'||attemptsOf(id).some(a=>a.correct===false)}
 
 function filtered(){
-  let q=QUESTIONS.slice(),t=$('#tema').value,c=$('#ciclo').value,y=$('#year').value,s=$('#state').value;
-  if(t!=='Todos')q=q.filter(x=>x.topic===t);
-  if(c!=='Todos')q=q.filter(x=>x.cycle===c);
+  let q=QUESTIONS.slice(),y=$('#year').value,s=$('#state').value;
   if(y!=='Todas')q=q.filter(x=>x.year===y);
   if(s==='Pendientes')q=q.filter(x=>!statusOf(x.id));
   if(s==='Falladas')q=q.filter(x=>hadWrong(x.id));
@@ -159,7 +157,7 @@ function render(){
   const x=pool[i];if(!x)return;
   chosen=mode==='exam' && Number.isInteger(examAnswers[x.id])?examAnswers[x.id]:null;
   $('#progress').textContent=`${i+1} de ${pool.length}`;
-  $('#meta').textContent=`Año ${x.year} · Pregunta ${x.number} · ${x.topic} · ${x.cycle}`;
+  $('#meta').textContent=`Año ${x.year} · Pregunta ${x.number}`;
   $('#question').textContent=x.q;
   if(mode==='practice'){
     const triedWrong=new Set(attemptsOf(x.id).filter(a=>!a.correct).map(a=>a.selected));
