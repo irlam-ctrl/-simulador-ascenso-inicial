@@ -4,7 +4,7 @@ let S=JSON.parse(localStorage.getItem(K)||'{"fav":[],"status":{}}');
 if(!S.attempts)S.attempts={};
 
 function save(){localStorage.setItem(K,JSON.stringify(S));if(window.syncProgress)setTimeout(()=>window.syncProgress(),0)}
-window.reloadStudyState=()=>{S=JSON.parse(localStorage.getItem(K)||'{"fav":[],"status":{},"attempts":{}}');if(!S.attempts)S.attempts={};counts();if(!$('#quiz').classList.contains('hidden'))render()}
+window.reloadStudyState=(renderQuiz=true)=>{S=JSON.parse(localStorage.getItem(K)||'{"fav":[],"status":{},"attempts":{}}');if(!S.attempts)S.attempts={};counts();if(renderQuiz&&!$('#quiz').classList.contains('hidden'))render()}
 function rec(id){
   const v=S.status[id];
   if(typeof v==='string') return {result:v,legacy:true};
@@ -62,8 +62,9 @@ function jumpOfficial(d){const x=pool[i],y=selectedYear();if(!x||!y)return;const
 function setBanner(x){
   const b=$('#answerStatus'),s=statusOf(x.id);
   if(s==='correct'&&hadWrong(x.id)){
-    b.innerHTML='<span class="statusSymbol">✕✓</span><strong>FALLADA · RESUELTA POSTERIORMENTE</strong>';
-    b.className='answerStatus status-wrong';
+    const n=attemptsOf(x.id).length;
+    b.innerHTML=`<span class="statusSymbol">✓</span><strong>CORRECTA · RESUELTA TRAS ${n} ${n===1?'INTENTO':'INTENTOS'}</strong>`;
+    b.className='answerStatus status-correct';
   }else if(s==='correct'){
     b.innerHTML='<span class="statusSymbol">✓</span><strong>YA RESPONDIDA · CORRECTA</strong>';
     b.className='answerStatus status-correct';

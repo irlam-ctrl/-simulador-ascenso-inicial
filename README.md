@@ -38,3 +38,12 @@ V5.1:
 
 
 V5.1: corrige reintentos tras respuesta incorrecta y muestra segundos en la hora de sincronización.
+
+
+V5.2:
+- Corrige el parpadeo/reversión visual después de acertar durante una sincronización.
+- La sincronización en segundo plano ya no vuelve a renderizar la pregunta abierta.
+- Si una pregunta se resuelve después de errores, el encabezado queda como CORRECTA · RESUELTA TRAS X INTENTOS.
+- La alternativa correcta, la explicación y el botón Siguiente permanecen visibles después de acertar.
+- Conserva historial de intentos y sincronización con Supabase.
+- Mantiene hora de sincronización con segundos.

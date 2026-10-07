@@ -24,7 +24,7 @@ function mergeCloud(rows){
    if(r.favorite&&!s.fav.includes(r.question_id))s.fav.push(r.question_id);
  }
  localStorage.setItem('maraAscenso360v2',JSON.stringify(s));
- if(window.reloadStudyState)window.reloadStudyState();
+ if(window.reloadStudyState)window.reloadStudyState(false);
 }
 async function pullCloud(){const u=window.cloudSync.user;if(!u)return;const {data,error}=await cloudClient.from('user_progress').select('*').eq('user_id',u.id);if(error)throw error;mergeCloud(data);return data||[]}
 async function pushCloud(){const u=window.cloudSync.user;if(!u)return;const rows=localRows(u.id);if(!rows.length)return;const {error}=await cloudClient.from('user_progress').upsert(rows,{onConflict:'user_id,question_id'});if(error)throw error}
