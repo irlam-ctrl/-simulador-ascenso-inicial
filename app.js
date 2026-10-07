@@ -208,7 +208,7 @@ $('#reset').onclick=async()=>{
   const hasExams=examHistory().length>0;
   if(!hasPractice&&!hasExams){alert('Todavía no hay progreso para restablecer.');return}
   const next=stageHistory().length+1;
-  const msg=`¿Deseas restablecer tu progreso? Tu avance actual se guardará en el historial antes de comenzar nuevamente desde cero.`;
+  const msg='¿Deseas restablecer tu progreso? El progreso actual se borrará y comenzarás nuevamente desde cero.';
   if(!confirm(msg))return;
   try{
     const snapshot=stageSnapshot();
@@ -219,7 +219,7 @@ $('#reset').onclick=async()=>{
     localStorage.setItem(K,JSON.stringify(S));
     localStorage.removeItem(EK);
     counts();renderStageHistory();
-    alert(`Progreso restablecido. Tu avance anterior quedó guardado en el historial.`);
+    
   }catch(err){
     console.error(err);
     alert('No se pudo guardar la etapa completa. No se restableció el progreso. Revisa la conexión e inténtalo nuevamente.');
