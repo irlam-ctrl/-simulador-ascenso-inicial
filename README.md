@@ -1,13 +1,9 @@
-# Simulador de Ascenso EBR Inicial — V5.5
+# Simulador de Ascenso EBR Inicial — V5.4.1
 
-Cambios:
-- Se eliminan los filtros Tema y Ciclo.
-- “Prueba” pasa a llamarse “Año”.
-- En cada pregunta ya no se muestran Tema ni Ciclo; solo Año y número oficial.
-- Se mantiene Estado: Todas, Pendientes, Falladas, Acertadas y Favoritas.
-- Se corrigieron 28 bloques de contexto que habían quedado pegados por error a la alternativa C de la pregunta anterior.
-- Los textos compartidos (“Lea la siguiente situación/texto...”) ahora acompañan a las preguntas que realmente dependen de ellos.
-- No se modificaron las claves A/B/C.
+Corrección crítica del Modo práctica:
+- La práctica queda fijada al conjunto exacto obtenido al pulsar “Comenzar práctica”.
+- Ejemplo: Año 2019 + Comunicación = 19 preguntas -> siempre X de 19.
+- Anterior, Siguiente y la cuadrícula solo recorren esas 19 preguntas.
+- Nunca cambia silenciosamente al conjunto completo de 60 preguntas del año.
+- La referencia oficial (Año y número de pregunta) se mantiene como metadato.
 - No requiere cambios en Supabase ni SQL.
-
-Ver AUDITORIA-CONTEXTOS.txt para el detalle de los 28 casos.
