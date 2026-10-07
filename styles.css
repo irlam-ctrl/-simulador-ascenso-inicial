@@ -57,3 +57,12 @@
 .examResultStats strong{display:block;font:800 20px system-ui}.examResultStats span{font:11px system-ui;color:var(--muted)}
 #finishExam{margin-top:12px}
 @media(max-width:520px){.practiceStats,.examResultStats{grid-template-columns:repeat(2,1fr)}}
+
+/* V5.3.3 — navegación rápida en práctica */
+#progress[role="button"]{cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:4px}
+#questionGrid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:7px}
+#questionGrid button{min-width:0;min-height:40px;padding:4px}
+@media(max-width:520px){
+  #questionGrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+  #questionGrid button{min-height:44px}
+}

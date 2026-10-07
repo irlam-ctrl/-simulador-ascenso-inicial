@@ -91,21 +91,29 @@ function displayState(id){const s=statusOf(id);if(s==='correct'&&hadWrong(id))re
 
 function updateNavigator(){
   const nav=$('#practiceNav'),panel=$('#navigator');
-  if(mode!=='practice'){nav.classList.add('hidden');panel.classList.add('hidden');return}
-  const x=pool[i],y=selectedYear();if(!x||!y){nav.classList.add('hidden');panel.classList.add('hidden');return}
-  nav.classList.remove('hidden');const all=yearQuestions(y);
-  $('#currentOfficial').textContent=x.number;$('#totalOfficial').textContent=all.length;
-  $('#prevQ').disabled=x.number<=1;$('#nextQ').disabled=x.number>=all.length;
-  $('#questionGrid').innerHTML=all.map(q=>{
-    const s=displayState(q.id),fav=S.fav.includes(q.id),cur=q.id===x.id;
+  if(mode!=='practice'||!pool.length){nav.classList.add('hidden');panel.classList.add('hidden');return}
+  nav.classList.remove('hidden');
+  const x=pool[i];
+  $('#currentOfficial').textContent=i+1;
+  $('#totalOfficial').textContent=pool.length;
+  $('#prevQ').disabled=i<=0;
+  $('#nextQ').disabled=i>=pool.length-1;
+  $('#questionGrid').innerHTML=pool.map((q,idx)=>{
+    const s=displayState(q.id),fav=S.fav.includes(q.id),cur=idx===i;
     const cls=[s==='correct'?'q-correct':(s==='wrong'||s==='reinforced')?'q-wrong':'',cur?'q-current':'',fav?'q-fav':''].filter(Boolean).join(' ');
     const mark=s==='correct'?'✓':(s==='wrong'||s==='reinforced')?'✕':'';
-    return `<button type="button" class="${cls}" data-id="${q.id}"><span class="gridMark">${mark}</span><span class="gridNum">${q.number}</span></button>`;
+    return `<button type="button" class="${cls}" data-index="${idx}" aria-label="Pregunta ${idx+1}, año ${q.year}">
+      <span class="gridMark">${mark}</span><span class="gridNum">${idx+1}</span>
+    </button>`;
   }).join('');
-  $('#questionGrid').querySelectorAll('button').forEach(b=>b.onclick=()=>jumpToId(b.dataset.id));
+  $('#questionGrid').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    i=+b.dataset.index;$('#navigator').classList.add('hidden');render();
+  });
 }
-function jumpToId(id){let idx=pool.findIndex(q=>q.id===id);if(idx<0){const q=QUESTIONS.find(q=>q.id===id);if(!q)return;pool=yearQuestions(q.year);idx=pool.findIndex(z=>z.id===id)}i=idx;$('#navigator').classList.add('hidden');render()}
-function jumpOfficial(d){const x=pool[i],y=selectedYear();if(!x||!y)return;const q=QUESTIONS.find(z=>z.year===y&&z.number===x.number+d);if(q)jumpToId(q.id)}
+function jumpOfficial(d){
+  const ni=i+d;
+  if(ni>=0&&ni<pool.length){i=ni;render()}
+}
 
 function setBanner(x){
   const b=$('#answerStatus');
@@ -226,3 +234,13 @@ $('#reset').onclick=async()=>{
   }
 };
 counts();
+
+// V5.3.3: tocar “5 de 360” también abre/cierra la cuadrícula en modo práctica.
+if($('#progress')){
+  $('#progress').setAttribute('role','button');
+  $('#progress').setAttribute('tabindex','0');
+  $('#progress').setAttribute('aria-label','Abrir cuadrícula de preguntas');
+  const toggleGrid=()=>{if(mode==='practice')$('#navigator').classList.toggle('hidden')};
+  $('#progress').addEventListener('click',toggleGrid);
+  $('#progress').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleGrid()}});
+}

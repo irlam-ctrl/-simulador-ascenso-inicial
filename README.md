@@ -1,9 +1,10 @@
-# Simulador de Ascenso EBR Inicial — V5.3.2
+# Simulador de Ascenso EBR Inicial — V5.3.3
 
-Cambios:
-- Se elimina de la interfaz el bloque “Historial de progreso”.
-- El botón sigue siendo “Restablecer progreso”.
-- Al restablecer aparece una sola confirmación previa.
-- Ya no aparece un segundo aviso después de restablecer.
-- Internamente se conserva una copia histórica en Supabase antes de iniciar desde cero.
-- No requiere cambios SQL adicionales respecto de V5.3.1.
+Cambio principal:
+- En Modo práctica se habilita la cuadrícula de navegación para cualquier selección de filtros.
+- Permite ir directamente a una pregunta anterior o posterior y regresar a ella.
+- Funciona incluso con Año = Todas.
+- El indicador “X de Y” también se puede tocar para abrir/cerrar la cuadrícula.
+- Flechas Anterior/Siguiente recorren el conjunto de práctica actual.
+- Mantiene estados visuales de correctas, falladas/reintentadas y favoritas.
+- No requiere cambios en Supabase ni SQL adicional.
