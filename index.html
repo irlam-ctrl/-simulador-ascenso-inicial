@@ -33,6 +33,35 @@
   <div id="questionGrid" class="questionGrid"></div>
 </div>
 <div class="meta" id="meta"></div>
-<div id="answerStatus" class="answerStatus hidden" role="status"></div><h2 id="question"></h2><div id="options"></div><button id="check" disabled>Comprobar respuesta</button><div id="feedback" class="feedback hidden"></div><button id="next" class="hidden">Siguiente caso →</button></section>
-<section class="stats"><div><strong id="answered">0</strong><span>Respondidas</span></div><div><strong id="accuracy">0%</strong><span>Aciertos</span></div><div><strong id="favorites">0</strong><span>Favoritas</span></div></section>
-<footer>Las respuestas correctas se contrastan con las claves oficiales. La explicación de estudio es complementaria.<br><span class="signature">V5.2 · Creado por Irv</span></footer></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="questions.js"></script><script src="cloud.js"></script><script src="app.js"></script></body></html>
+<div id="answerStatus" class="answerStatus hidden" role="status"></div><h2 id="question"></h2><div id="options"></div>
+    <button id="check" disabled>Comprobar respuesta</button>
+    <div id="feedback" class="feedback hidden"></div>
+    <button id="next" class="hidden">Siguiente caso →</button>
+    <button id="finishExam" class="ghost hidden" type="button">Entregar examen</button>
+    </section>
+    <section id="examResult" class="card hidden">
+      <p class="kicker">RESULTADO DEL EXAMEN</p>
+      <h2>Examen terminado</h2>
+      <div id="examResultStats" class="examResultStats"></div>
+      <p id="examResultText" class="cloudText"></p>
+      <button id="closeExamResult" type="button">Volver al inicio</button>
+    </section>
+<section class="dashboard">
+      <div class="statsCard">
+        <p class="kicker">MODO PRÁCTICA</p>
+        <h2>Progreso de práctica</h2>
+        <div class="stats practiceStats">
+          <div><strong id="answered">0</strong><span>Respondidas</span></div>
+          <div><strong id="accuracy">0%</strong><span>Al primer intento</span></div>
+          <div><strong id="retried">0</strong><span>Reintentadas</span></div>
+          <div><strong id="favorites">0</strong><span>Favoritas</span></div>
+        </div>
+      </div>
+      <div class="statsCard">
+        <p class="kicker">MODO EXAMEN</p>
+        <h2>Historial de exámenes</h2>
+        <div id="examSummary" class="examSummary">Aún no hay exámenes terminados.</div>
+        <div id="examHistory" class="examHistory"></div>
+      </div>
+    </section>
+<footer>Las respuestas correctas se contrastan con las claves oficiales. La explicación de estudio es complementaria.<br><span class="signature">V5.3 · Creado por Irv</span></footer></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="questions.js"></script><script src="cloud.js"></script><script src="app.js"></script></body></html>

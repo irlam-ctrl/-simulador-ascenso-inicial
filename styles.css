@@ -42,3 +42,18 @@
 
 /* V5 cloud sync */
 .cloudCard{margin-bottom:18px}.cloudHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.cloudHead h2{margin:.15rem 0 .5rem}.cloudText{color:#73776e;line-height:1.5}.cloudCard input{box-sizing:border-box;width:100%;font:inherit;padding:16px;border:1px solid #cbc8bc;border-radius:12px;background:#fff;margin-top:8px}.syncBadge{white-space:nowrap;border:1px solid #b8b5aa;border-radius:999px;padding:7px 10px;font:700 12px system-ui;color:#555;background:#fff}.syncBadge.synced{border-style:solid;color:#143f34}.syncBadge.pending{border-style:dashed;color:#222}.cloudActions{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cloudMsg{min-height:1.3em;font-size:14px}.cloudCard button{margin-top:10px}
+
+/* V5.3 — práctica y examen separados */
+.dashboard{display:grid;gap:14px;margin-top:14px}
+.statsCard{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px}
+.statsCard h2{margin:5px 0 12px}
+.practiceStats{grid-template-columns:repeat(4,1fr);margin-top:0}
+.examSummary{font:14px/1.45 system-ui;color:var(--muted);margin:6px 0 12px}
+.examHistory{display:grid;gap:8px}
+.examRow{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:10px;font-family:system-ui}
+.examRow>div:last-child{text-align:right}.examRow strong,.examRow span{display:block}.examRow span{font-size:11px;color:var(--muted);margin-top:3px}
+.examResultStats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.examResultStats div{text-align:center;border:1px solid var(--line);border-radius:8px;padding:12px 4px}
+.examResultStats strong{display:block;font:800 20px system-ui}.examResultStats span{font:11px system-ui;color:var(--muted)}
+#finishExam{margin-top:12px}
+@media(max-width:520px){.practiceStats,.examResultStats{grid-template-columns:repeat(2,1fr)}}

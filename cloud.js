@@ -28,7 +28,7 @@ function mergeCloud(rows){
 }
 async function pullCloud(){const u=window.cloudSync.user;if(!u)return;const {data,error}=await cloudClient.from('user_progress').select('*').eq('user_id',u.id);if(error)throw error;mergeCloud(data);return data||[]}
 async function pushCloud(){const u=window.cloudSync.user;if(!u)return;const rows=localRows(u.id);if(!rows.length)return;const {error}=await cloudClient.from('user_progress').upsert(rows,{onConflict:'user_id,question_id'});if(error)throw error}
-async function syncAll(label='Sincronizado'){if(window.cloudSync.busy||!window.cloudSync.user)return;window.cloudSync.busy=true;const e=cloudEls();e.badge.textContent='Sincronizando…';try{await pushCloud();await pullCloud();e.badge.textContent='Nube activa';e.badge.className='syncBadge synced';e.text.textContent=label+' · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'})}catch(err){e.badge.textContent='Pendiente';e.badge.className='syncBadge pending';e.text.textContent='Guardado local. La nube reintentará cuando haya conexión.';console.error(err)}finally{window.cloudSync.busy=false}}
+async function syncAll(label='Sincronizado'){if(window.cloudSync.busy||!window.cloudSync.user)return;window.cloudSync.busy=true;const e=cloudEls();e.badge.textContent='Sincronizando…';try{await pushCloud();await pullCloud();if(window.syncExamHistory)await window.syncExamHistory();e.badge.textContent='Nube activa';e.badge.className='syncBadge synced';e.text.textContent=label+' · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'})}catch(err){e.badge.textContent='Pendiente';e.badge.className='syncBadge pending';e.text.textContent='Guardado local. La nube reintentará cuando haya conexión.';console.error(err)}finally{window.cloudSync.busy=false}}
 window.syncProgress=()=>syncAll();
 
 async function initCloud(){
@@ -41,3 +41,28 @@ async function initCloud(){
  window.addEventListener('online',()=>syncAll('Sincronizado al volver la conexión'));
 }
 document.addEventListener('DOMContentLoaded',initCloud);
+
+
+/* V5.3 — historial de exámenes separado del progreso de práctica.
+   Si la tabla exam_sessions aún no existe, la app sigue funcionando y conserva el historial local. */
+function localExamRows(userId){
+  let h=[];try{h=JSON.parse(localStorage.getItem('maraAscensoExamHistoryV1')||'[]')}catch{}
+  return h.map(x=>({id:x.id,user_id:userId,label:x.label,correct:x.correct,incorrect:x.incorrect,total:x.total,percent:x.percent,elapsed:x.elapsed,finished_at:x.finishedAt,answers:x.answers||{}}));
+}
+async function pullExamHistory(){
+  const u=window.cloudSync.user;if(!u)return;
+  const {data,error}=await cloudClient.from('exam_sessions').select('*').eq('user_id',u.id).order('finished_at',{ascending:false});
+  if(error)return; // tabla opcional: no interrumpe la sincronización de práctica
+  let local=[];try{local=JSON.parse(localStorage.getItem('maraAscensoExamHistoryV1')||'[]')}catch{}
+  const map=new Map(local.map(x=>[x.id,x]));
+  for(const r of data||[])map.set(r.id,{id:r.id,label:r.label,correct:r.correct,incorrect:r.incorrect,total:r.total,percent:r.percent,elapsed:r.elapsed,finishedAt:r.finished_at,answers:r.answers||{}});
+  localStorage.setItem('maraAscensoExamHistoryV1',JSON.stringify([...map.values()]));
+  if(window.reloadExamHistory)window.reloadExamHistory();
+}
+async function pushExamHistory(){
+  const u=window.cloudSync.user;if(!u)return;
+  const rows=localExamRows(u.id);if(!rows.length)return;
+  const {error}=await cloudClient.from('exam_sessions').upsert(rows,{onConflict:'id'});
+  if(error)return;
+}
+window.syncExamHistory=async()=>{await pushExamHistory();await pullExamHistory()};
