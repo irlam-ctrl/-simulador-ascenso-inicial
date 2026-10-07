@@ -93,23 +93,23 @@ function updateNavigator(){
     nav.classList.add('hidden');panel.classList.add('hidden');return;
   }
 
+  if(i<0)i=0;
+  if(i>=pool.length)i=pool.length-1;
+
+  const pos=i+1,total=pool.length;
+  $('#progress').textContent=`${pos} de ${total}`;
   nav.classList.remove('hidden');
-  const current=pool[i];
-
-  // Both counters refer to the CURRENT FILTERED PRACTICE SET.
-  $('#currentOfficial').textContent=i+1;
-  $('#totalOfficial').textContent=pool.length;
+  $('#currentOfficial').textContent=pos;
+  $('#totalOfficial').textContent=total;
   $('#prevQ').disabled=i===0;
-  $('#nextQ').disabled=i===pool.length-1;
+  $('#nextQ').disabled=i===total-1;
 
-  // Central control: same meaning as the top counter.
   const open=$('#openNavigator');
   if(open){
-    open.textContent=`Pregunta ${i+1} de ${pool.length} ▾`;
-    open.setAttribute('aria-label',`Abrir cuadrícula. Pregunta ${i+1} de ${pool.length}`);
+    open.textContent=`Pregunta ${pos} de ${total} ▾`;
+    open.setAttribute('aria-label',`Abrir cuadrícula. Pregunta ${pos} de ${total}`);
   }
 
-  // Grid contains exactly the questions in the active practice pool.
   $('#questionGrid').innerHTML=pool.map((q,idx)=>{
     const s=displayState(q.id),fav=S.fav.includes(q.id),cur=idx===i;
     const cls=[
@@ -118,7 +118,8 @@ function updateNavigator(){
     ].filter(Boolean).join(' ');
     const mark=s==='correct'?'✓':(s==='wrong'||s==='reinforced')?'✕':'';
     return `<button type="button" class="${cls}" data-index="${idx}"
-      aria-label="Ir a ${q.year}, pregunta oficial ${q.number}">
+      aria-current="${cur?'true':'false'}"
+      aria-label="Ir a pregunta ${idx+1} de ${total}. Año ${q.year}, pregunta oficial ${q.number}">
       <span class="gridMark">${mark}</span>
       <span class="gridNum">${idx+1}</span>
       <span class="gridOfficial">${q.year} · P${q.number}</span>
@@ -126,7 +127,9 @@ function updateNavigator(){
   }).join('');
 
   $('#questionGrid').querySelectorAll('button').forEach(b=>b.onclick=()=>{
-    i=Number(b.dataset.index);
+    const target=Number(b.dataset.index);
+    if(!Number.isInteger(target)||target<0||target>=pool.length)return;
+    i=target;
     panel.classList.add('hidden');
     render();
     window.scrollTo({top:$('#quiz').offsetTop-8,behavior:'smooth'});
@@ -228,7 +231,7 @@ $('#check').onclick=()=>{
   if(good){
     S.status[x.id]={result:'correct',selected:chosen,hadWrong:S.attempts[x.id].some(a=>!a.correct)};save();
     document.querySelectorAll('.option').forEach((b,n)=>{b.disabled=true;if(n===x.a)b.classList.add('correct')});
-    $('#feedback').innerHTML=`<b>Correcto ✓</b><br>${x.why}`;$('#feedback').classList.remove('hidden');$('#next').classList.remove('hidden');$('#check').classList.add('hidden');
+    $('#feedback').innerHTML=`<b>Correcto ✓</b><br>${x.why}`;$('#feedback').classList.remove('hidden');$('#next').classList.add('hidden');$('#check').classList.add('hidden');
   }else{
     S.status[x.id]={result:'wrong',selected:chosen};save();
     const b=document.querySelector(`.option[data-n="${chosen}"]`);if(b)b.classList.add('wrong','tried');
