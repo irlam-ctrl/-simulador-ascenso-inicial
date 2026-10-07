@@ -14,3 +14,16 @@
 .questionGrid button.q-fav::after{content:"★";position:absolute;right:1px;top:-3px;font-size:8px}
 .signature{display:inline-block;margin-top:7px;opacity:.72;letter-spacing:.04em}
 @media(max-width:420px){.questionGrid{grid-template-columns:repeat(8,1fr)}}
+
+/* V4.1 — estados accesibles: símbolo + texto, nunca solo color */
+.answerStatus{margin:14px 0;padding:12px 14px;border:2px solid #111;border-radius:8px;font:800 13px/1.35 system-ui;letter-spacing:.035em}
+.answerStatus.status-correct{background:#fff;color:#111;border-color:#006400}
+.answerStatus.status-wrong{background:#fff;color:#111;border-color:#b00020}
+.answerStatus .statusSymbol{font-size:18px;margin-right:7px}
+.questionGrid button.q-correct{background:#fff!important;color:#111!important;border:3px solid #006400!important}
+.questionGrid button.q-wrong{background:#fff!important;color:#111!important;border:3px dashed #b00020!important}
+.questionGrid button.q-current{outline:4px solid #000!important;outline-offset:2px}
+.questionGrid button .stateMark{display:block;font-size:10px;line-height:10px;font-weight:900}
+.questionGrid button.q-fav::after{content:"★";color:#000;font-size:10px;right:2px;top:-2px}
+.navLegend{color:#222}
+.navLegend .legendMark{font-weight:900;font-size:14px;min-width:14px;text-align:center}

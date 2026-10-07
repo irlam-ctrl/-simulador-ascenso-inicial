@@ -49,7 +49,8 @@ function updateNavigator(){
   $('#nextQ').disabled=x.number>=all.length;
   $('#questionGrid').innerHTML=all.map(q=>{
     const status=st(q.id), cls=[status==='correct'?'q-correct':status==='wrong'?'q-wrong':'',q.id===x.id?'q-current':'',S.fav.includes(q.id)?'q-fav':''].filter(Boolean).join(' ');
-    return `<button type="button" class="${cls}" data-id="${q.id}" aria-label="Pregunta ${q.number}, ${status==='correct'?'acertada':status==='wrong'?'fallada':'pendiente'}">${q.number}</button>`;
+    const mark=status==='correct'?'✓':status==='wrong'?'✕':'';
+    return `<button type="button" class="${cls}" data-id="${q.id}" aria-label="Pregunta ${q.number}, ${status==='correct'?'acertada':status==='wrong'?'fallada':'pendiente'}"><span>${q.number}</span>${mark?`<span class="stateMark" aria-hidden="true">${mark}</span>`:''}</button>`;
   }).join('');
   $('#questionGrid').querySelectorAll('button').forEach(b=>b.onclick=()=>jumpToId(b.dataset.id));
 }
@@ -78,6 +79,17 @@ function render(){
   $('#check').disabled=true; $('#check').classList.remove('hidden');
   $('#feedback').classList.add('hidden'); $('#next').classList.add('hidden');
   $('#fav').textContent=S.fav.includes(x.id)?'★':'☆';
+  const prior=st(x.id), banner=$('#answerStatus');
+  if(prior==='correct'){
+    banner.innerHTML='<span class="statusSymbol">✓</span>YA RESPONDIDA · CORRECTA';
+    banner.className='answerStatus status-correct';
+  }else if(prior==='wrong'){
+    banner.innerHTML=`<span class="statusSymbol">✕</span>YA RESPONDIDA · INCORRECTA · Clave correcta: ${'ABC'[x.a]}`;
+    banner.className='answerStatus status-wrong';
+  }else{
+    banner.textContent='';
+    banner.className='answerStatus hidden';
+  }
   document.querySelectorAll('.option').forEach(b=>b.onclick=()=>{
     document.querySelectorAll('.option').forEach(z=>z.classList.remove('selected'));
     b.classList.add('selected'); chosen=+b.dataset.n; $('#check').disabled=false;
