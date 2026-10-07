@@ -1,9 +1,11 @@
-# Simulador de Ascenso EBR Inicial — V5.4.1
+# Simulador de Ascenso EBR Inicial — V5.4.2
 
-Corrección crítica del Modo práctica:
-- La práctica queda fijada al conjunto exacto obtenido al pulsar “Comenzar práctica”.
-- Ejemplo: Año 2019 + Comunicación = 19 preguntas -> siempre X de 19.
-- Anterior, Siguiente y la cuadrícula solo recorren esas 19 preguntas.
-- Nunca cambia silenciosamente al conjunto completo de 60 preguntas del año.
-- La referencia oficial (Año y número de pregunta) se mantiene como metadato.
-- No requiere cambios en Supabase ni SQL.
+Base: V5.4.1 estable.
+
+Cambios deliberadamente mínimos:
+- Se elimina el filtro Tema.
+- Se elimina el filtro Ciclo.
+- “Prueba” pasa a llamarse “Año”.
+- En cada pregunta se muestra únicamente “Año · Pregunta”.
+- Se mantienen intactos questions.js, cloud.js, sincronización, navegación, práctica, examen, progreso y Supabase.
+- No requiere SQL ni cambios en Supabase.
