@@ -35,3 +35,7 @@
 .questionGrid button.q-correct{background:#fff!important;border:3px solid #006400!important}
 .questionGrid button.q-wrong{background:#fff!important;border:3px dashed #b00020!important}
 .questionGrid button.q-current{outline:4px solid #000!important;outline-offset:2px}
+
+/* V4.3 — reintento pedagógico */
+.option.tried:disabled{opacity:1;text-decoration:line-through;border-style:dashed}
+.answerStatus.status-wrong .statusSymbol{letter-spacing:2px}
