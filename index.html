@@ -7,6 +7,17 @@
 <label>ESTADO<select id="state"><option>Todas</option><option>Pendientes</option><option>Falladas</option><option>Acertadas</option><option>Favoritas</option></select></label>
 <button id="practice">Comenzar práctica</button><button id="exam" class="ghost">Modo examen · 60 preguntas · 3 h</button>
 <button id="reset" class="ghost">Restablecer progreso</button></section>
-<section id="quiz" class="card hidden"><div class="topline"><button id="back" class="mini">← Salir</button><span id="progress"></span><span id="timer"></span><button id="fav" class="mini">☆</button></div><div class="meta" id="meta"></div><h2 id="question"></h2><div id="options"></div><button id="check" disabled>Comprobar respuesta</button><div id="feedback" class="feedback hidden"></div><button id="next" class="hidden">Siguiente caso →</button></section>
+<section id="quiz" class="card hidden">
+<div class="topline"><button id="back" class="mini">← Salir</button><span id="progress"></span><span id="timer"></span><button id="fav" class="mini">☆</button></div>
+<div id="practiceNav" class="practiceNav hidden">
+  <button id="prevQ" class="mini navArrow" aria-label="Pregunta anterior">‹</button>
+  <button id="openNavigator" class="questionPicker" type="button">Pregunta <span id="currentOfficial">1</span> de <span id="totalOfficial">60</span> ▾</button>
+  <button id="nextQ" class="mini navArrow" aria-label="Pregunta siguiente">›</button>
+</div>
+<div id="navigator" class="navigator hidden">
+  <div class="navLegend"><span><i class="dot pending"></i>Pendiente</span><span><i class="dot correct"></i>Acertada</span><span><i class="dot wrong"></i>Fallada</span><span>★ Favorita</span></div>
+  <div id="questionGrid" class="questionGrid"></div>
+</div>
+<div class="meta" id="meta"></div><h2 id="question"></h2><div id="options"></div><button id="check" disabled>Comprobar respuesta</button><div id="feedback" class="feedback hidden"></div><button id="next" class="hidden">Siguiente caso →</button></section>
 <section class="stats"><div><strong id="answered">0</strong><span>Respondidas</span></div><div><strong id="accuracy">0%</strong><span>Aciertos</span></div><div><strong id="favorites">0</strong><span>Favoritas</span></div></section>
-<footer>Las respuestas correctas se contrastan con las claves oficiales. La explicación de estudio es complementaria.</footer></main><script src="questions.js"></script><script src="app.js"></script></body></html>
+<footer>Las respuestas correctas se contrastan con las claves oficiales. La explicación de estudio es complementaria.<br><span class="signature">V4 · Creado por Irv</span></footer></main><script src="questions.js"></script><script src="app.js"></script></body></html>
