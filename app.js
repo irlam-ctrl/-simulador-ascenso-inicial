@@ -1,5 +1,5 @@
 const $=s=>document.querySelector(s),K='maraAscenso360v2',EK='maraAscensoExamHistoryV1',SK='maraAscensoStageHistoryV1';
-let pool=[],i=0,chosen=null,mode='practice',seconds=0,tick=null,examAnswers={},examStartedAt=null;
+let pool=[],i=0,chosen=null,mode='practice',seconds=0,tick=null,examAnswers={},examStartedAt=null,practicePoolIds=[];
 let S=JSON.parse(localStorage.getItem(K)||'{"fav":[],"status":{},"attempts":{}}');
 if(!S.attempts)S.attempts={};
 
@@ -151,6 +151,11 @@ function setBanner(x){
   else{b.textContent='';b.className='answerStatus hidden'}
 }
 function render(){
+  if(mode==='practice'&&practicePoolIds.length){
+    const byId=new Map(QUESTIONS.map(q=>[q.id,q]));
+    pool=practicePoolIds.map(id=>byId.get(id)).filter(Boolean);
+    if(i>=pool.length)i=Math.max(0,pool.length-1);
+  }
   const x=pool[i];if(!x)return;
   chosen=mode==='exam' && Number.isInteger(examAnswers[x.id])?examAnswers[x.id]:null;
   $('#progress').textContent=`${i+1} de ${pool.length}`;
@@ -184,8 +189,10 @@ function start(exam){
     if(!pool.length){alert('No hay preguntas disponibles para el examen.');return}
     i=0;examAnswers={};examStartedAt=Date.now();seconds=10800;clearInterval(tick);timer();tick=setInterval(timer,1000);
   }else{
-    mode='practice';pool=filtered();
+    mode='practice';
+    pool=filtered();
     if(!pool.length){alert($('#state').value==='Pendientes'?'No quedan preguntas pendientes con estos filtros.':`No hay preguntas en el estado “${$('#state').value}” con estos filtros.`);return}
+    practicePoolIds=pool.map(q=>q.id);
     if($('#state').value==='Todas'){const p=pool.findIndex(x=>!statusOf(x.id));i=p>=0?p:0}else i=0;
   }
   $('#config').classList.add('hidden');$('#quiz').classList.remove('hidden');$('#examResult').classList.add('hidden');render();
@@ -232,7 +239,7 @@ $('#check').onclick=()=>{
   }
   counts();setBanner(x);updateNavigator();
 };
-$('#next').onclick=()=>{if(i+1>=pool.length){alert('Terminaste esta práctica.');$('#back').click();return}i++;render()};
+$('#next').onclick=()=>{if(i+1>=pool.length){alert('Terminaste esta práctica.');return}i++;render()};
 $('#finishExam').onclick=()=>finishExam(false);
 $('#closeExamResult').onclick=()=>{$('#examResult').classList.add('hidden');$('#config').classList.remove('hidden');mode='practice';counts()};
 $('#fav').onclick=()=>{let id=pool[i].id,n=S.fav.indexOf(id);n>=0?S.fav.splice(n,1):S.fav.push(id);save();$('#fav').textContent=S.fav.includes(id)?'★':'☆';counts();updateNavigator()};

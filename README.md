@@ -1,11 +1,9 @@
-# Simulador de Ascenso EBR Inicial — V5.4
+# Simulador de Ascenso EBR Inicial — V5.4.1
 
-Corrección de navegación en Modo práctica:
-- El navegador aparece SIEMPRE que haya una práctica activa, sin importar Tema, Ciclo, Año o Estado.
-- El contador superior y el navegador usan exactamente el mismo conjunto filtrado.
-- Si el filtro devuelve 13 preguntas, ambos muestran “X de 13”.
-- La cuadrícula contiene exactamente esas 13 preguntas.
-- Cada casilla muestra la posición en la práctica y debajo la referencia oficial, por ejemplo “2019 · P14”.
-- Anterior y Siguiente recorren el mismo conjunto filtrado.
-- Correctas, falladas/reintentadas y favoritas conservan sus indicadores.
-- No requiere cambios en Supabase ni SQL adicional.
+Corrección crítica del Modo práctica:
+- La práctica queda fijada al conjunto exacto obtenido al pulsar “Comenzar práctica”.
+- Ejemplo: Año 2019 + Comunicación = 19 preguntas -> siempre X de 19.
+- Anterior, Siguiente y la cuadrícula solo recorren esas 19 preguntas.
+- Nunca cambia silenciosamente al conjunto completo de 60 preguntas del año.
+- La referencia oficial (Año y número de pregunta) se mantiene como metadato.
+- No requiere cambios en Supabase ni SQL.
