@@ -66,3 +66,16 @@
   #questionGrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
   #questionGrid button{min-height:44px}
 }
+
+/* V5.4 — navegador consistente para cualquier práctica filtrada */
+#practiceNav{display:grid!important}
+#practiceNav.hidden{display:none!important}
+#questionGrid button{height:auto;min-height:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+#questionGrid .gridNum{font-weight:800}
+#questionGrid .gridOfficial{font-size:9px;line-height:1.1;opacity:.68;white-space:nowrap}
+#openNavigator{min-width:0;white-space:normal}
+@media(max-width:520px){
+  #questionGrid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  #questionGrid button{min-height:58px}
+  #questionGrid .gridOfficial{font-size:8px}
+}

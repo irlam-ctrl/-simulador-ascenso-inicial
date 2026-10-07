@@ -91,28 +91,54 @@ function displayState(id){const s=statusOf(id);if(s==='correct'&&hadWrong(id))re
 
 function updateNavigator(){
   const nav=$('#practiceNav'),panel=$('#navigator');
-  if(mode!=='practice'||!pool.length){nav.classList.add('hidden');panel.classList.add('hidden');return}
+  if(mode!=='practice'||!pool.length){
+    nav.classList.add('hidden');panel.classList.add('hidden');return;
+  }
+
   nav.classList.remove('hidden');
-  const x=pool[i];
+  const current=pool[i];
+
+  // Both counters refer to the CURRENT FILTERED PRACTICE SET.
   $('#currentOfficial').textContent=i+1;
   $('#totalOfficial').textContent=pool.length;
-  $('#prevQ').disabled=i<=0;
-  $('#nextQ').disabled=i>=pool.length-1;
+  $('#prevQ').disabled=i===0;
+  $('#nextQ').disabled=i===pool.length-1;
+
+  // Central control: same meaning as the top counter.
+  const open=$('#openNavigator');
+  if(open){
+    open.textContent=`Pregunta ${i+1} de ${pool.length} ▾`;
+    open.setAttribute('aria-label',`Abrir cuadrícula. Pregunta ${i+1} de ${pool.length}`);
+  }
+
+  // Grid contains exactly the questions in the active practice pool.
   $('#questionGrid').innerHTML=pool.map((q,idx)=>{
     const s=displayState(q.id),fav=S.fav.includes(q.id),cur=idx===i;
-    const cls=[s==='correct'?'q-correct':(s==='wrong'||s==='reinforced')?'q-wrong':'',cur?'q-current':'',fav?'q-fav':''].filter(Boolean).join(' ');
+    const cls=[
+      s==='correct'?'q-correct':(s==='wrong'||s==='reinforced')?'q-wrong':'',
+      cur?'q-current':'',fav?'q-fav':''
+    ].filter(Boolean).join(' ');
     const mark=s==='correct'?'✓':(s==='wrong'||s==='reinforced')?'✕':'';
-    return `<button type="button" class="${cls}" data-index="${idx}" aria-label="Pregunta ${idx+1}, año ${q.year}">
-      <span class="gridMark">${mark}</span><span class="gridNum">${idx+1}</span>
+    return `<button type="button" class="${cls}" data-index="${idx}"
+      aria-label="Ir a ${q.year}, pregunta oficial ${q.number}">
+      <span class="gridMark">${mark}</span>
+      <span class="gridNum">${idx+1}</span>
+      <span class="gridOfficial">${q.year} · P${q.number}</span>
     </button>`;
   }).join('');
+
   $('#questionGrid').querySelectorAll('button').forEach(b=>b.onclick=()=>{
-    i=+b.dataset.index;$('#navigator').classList.add('hidden');render();
+    i=Number(b.dataset.index);
+    panel.classList.add('hidden');
+    render();
+    window.scrollTo({top:$('#quiz').offsetTop-8,behavior:'smooth'});
   });
 }
+
 function jumpOfficial(d){
   const ni=i+d;
-  if(ni>=0&&ni<pool.length){i=ni;render()}
+  if(ni<0||ni>=pool.length)return;
+  i=ni;render();
 }
 
 function setBanner(x){
@@ -235,12 +261,4 @@ $('#reset').onclick=async()=>{
 };
 counts();
 
-// V5.3.3: tocar “5 de 360” también abre/cierra la cuadrícula en modo práctica.
-if($('#progress')){
-  $('#progress').setAttribute('role','button');
-  $('#progress').setAttribute('tabindex','0');
-  $('#progress').setAttribute('aria-label','Abrir cuadrícula de preguntas');
-  const toggleGrid=()=>{if(mode==='practice')$('#navigator').classList.toggle('hidden')};
-  $('#progress').addEventListener('click',toggleGrid);
-  $('#progress').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleGrid()}});
-}
+
