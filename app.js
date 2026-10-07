@@ -1,8 +1,32 @@
-const $=s=>document.querySelector(s),K='maraAscenso360v2',EK='maraAscensoExamHistoryV1';
+const $=s=>document.querySelector(s),K='maraAscenso360v2',EK='maraAscensoExamHistoryV1',SK='maraAscensoStageHistoryV1';
 let pool=[],i=0,chosen=null,mode='practice',seconds=0,tick=null,examAnswers={},examStartedAt=null;
 let S=JSON.parse(localStorage.getItem(K)||'{"fav":[],"status":{},"attempts":{}}');
 if(!S.attempts)S.attempts={};
 
+function stageHistory(){try{return JSON.parse(localStorage.getItem(SK)||'[]')}catch{return []}}
+function saveStageHistory(h){localStorage.setItem(SK,JSON.stringify(h));if(window.syncStageHistory)setTimeout(()=>window.syncStageHistory(),0)}
+function stageSnapshot(){
+  const ids=Object.keys(S.status||{});
+  const resolved=ids.filter(id=>statusOf(id)==='correct').length;
+  const firstTry=ids.filter(id=>statusOf(id)==='correct'&&!hadWrong(id)).length;
+  const retried=ids.filter(id=>statusOf(id)==='correct'&&hadWrong(id)).length;
+  const attempted=ids.filter(id=>statusOf(id)).length;
+  const exams=examHistory();
+  const bestExam=exams.length?Math.max(...exams.map(x=>x.percent||0)):null;
+  return {
+    id:`stage-${Date.now()}`,
+    number:stageHistory().length+1,
+    savedAt:new Date().toISOString(),
+    attempted,resolved,firstTry,retried,
+    firstTryPercent:resolved?Math.round(firstTry/resolved*100):0,
+    favorites:(S.fav||[]).length,
+    examCount:exams.length,
+    bestExam,
+    // Full study state is archived so the stage is auditable later.
+    practiceState:JSON.parse(JSON.stringify(S)),
+    exams:JSON.parse(JSON.stringify(exams))
+  };
+}
 function examHistory(){try{return JSON.parse(localStorage.getItem(EK)||'[]')}catch{return []}}
 function saveExamHistory(h){localStorage.setItem(EK,JSON.stringify(h));if(window.syncExamHistory)setTimeout(()=>window.syncExamHistory(),0)}
 function save(){localStorage.setItem(K,JSON.stringify(S));if(window.syncProgress)setTimeout(()=>window.syncProgress(),0)}
@@ -35,6 +59,7 @@ function counts(){
   $('#favorites').textContent=S.fav.length;
   $('#count').textContent=filtered().length;
   renderExamHistory();
+  renderStageHistory();
 }
 function renderExamHistory(){
   const h=examHistory().slice().sort((a,b)=>new Date(b.finishedAt)-new Date(a.finishedAt));
@@ -43,6 +68,16 @@ function renderExamHistory(){
   const best=Math.max(...h.map(x=>x.percent||0)),last=h[0];
   sum.innerHTML=`${h.length} ${h.length===1?'examen':'exámenes'} · Último: <strong>${last.correct}/${last.total} (${last.percent}%)</strong> · Mejor: <strong>${best}%</strong>`;
   box.innerHTML=h.slice(0,5).map(x=>`<div class="examRow"><div><strong>${x.label}</strong><span>${new Date(x.finishedAt).toLocaleDateString('es-PE')}</span></div><div><strong>${x.correct}/${x.total}</strong><span>${x.percent}% · ${formatDuration(x.elapsed)}</span></div></div>`).join('');
+}
+function renderStageHistory(){
+  const h=stageHistory().slice().sort((a,b)=>new Date(b.savedAt)-new Date(a.savedAt));
+  const box=$('#stageHistory'),sum=$('#stageSummary');if(!box||!sum)return;
+  if(!h.length){sum.textContent='Aún no hay avances anteriores guardados.';box.innerHTML='';return}
+  sum.textContent=`${h.length} ${h.length===1?'avance anterior':'avances anteriores'}`;
+  box.innerHTML=h.map(x=>`<div class="examRow stageRow">
+    <div><strong>Progreso ${x.number}</strong><span>${new Date(x.savedAt).toLocaleString('es-PE')}</span></div>
+    <div><strong>${x.resolved} resueltas · ${x.firstTryPercent}% al primer intento</strong><span>${x.retried} reintentadas · ${x.examCount} exámenes${x.bestExam===null?'':` · mejor ${x.bestExam}%`}</span></div>
+  </div>`).join('');
 }
 function formatDuration(s){s=Math.max(0,Math.round(s||0));const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return h?`${h} h ${m} min`:`${m} min`}
 function timer(){
@@ -85,7 +120,7 @@ function render(){
   const x=pool[i];if(!x)return;
   chosen=mode==='exam' && Number.isInteger(examAnswers[x.id])?examAnswers[x.id]:null;
   $('#progress').textContent=`${i+1} de ${pool.length}`;
-  $('#meta').textContent=`Prueba ${x.year} · Pregunta ${x.number} · ${x.topic} · ${x.cycle}`;
+  $('#meta').textContent=`Año ${x.year} · Pregunta ${x.number} · ${x.topic} · ${x.cycle}`;
   $('#question').textContent=x.q;
   if(mode==='practice'){
     const triedWrong=new Set(attemptsOf(x.id).filter(a=>!a.correct).map(a=>a.selected));
@@ -128,7 +163,7 @@ function finishExam(auto=false){
   clearInterval(tick);
   const correct=pool.filter(q=>examAnswers[q.id]===q.a).length,total=pool.length,incorrect=total-correct;
   const elapsed=Math.min(10800,Math.max(0,Math.round((Date.now()-examStartedAt)/1000)));
-  const y=selectedYear(),label=y?`Prueba ${y}`:'Examen aleatorio';
+  const y=selectedYear(),label=y?`Año ${y}`:'Examen aleatorio';
   const record={id:`exam-${Date.now()}`,label,correct,incorrect,total,percent:Math.round(correct/total*100),elapsed,finishedAt:new Date().toISOString(),answers:examAnswers};
   const h=examHistory();h.push(record);saveExamHistory(h);
   // Los errores del examen se guardan aparte: no modifican estadísticas de práctica.
@@ -168,5 +203,26 @@ $('#finishExam').onclick=()=>finishExam(false);
 $('#closeExamResult').onclick=()=>{$('#examResult').classList.add('hidden');$('#config').classList.remove('hidden');mode='practice';counts()};
 $('#fav').onclick=()=>{let id=pool[i].id,n=S.fav.indexOf(id);n>=0?S.fav.splice(n,1):S.fav.push(id);save();$('#fav').textContent=S.fav.includes(id)?'★':'☆';counts();updateNavigator()};
 $('#openNavigator').onclick=()=>$('#navigator').classList.toggle('hidden');$('#prevQ').onclick=()=>jumpOfficial(-1);$('#nextQ').onclick=()=>jumpOfficial(1);
-$('#reset').onclick=()=>{if(confirm('¿Restablecer todo el progreso? Se borrarán práctica, intentos, favoritas y el historial local de exámenes.')){S={fav:[],status:{},attempts:{}};localStorage.removeItem(EK);save();counts();alert('Progreso restablecido.')}};
+$('#reset').onclick=async()=>{
+  const hasPractice=Object.keys(S.status||{}).length>0 || (S.fav||[]).length>0;
+  const hasExams=examHistory().length>0;
+  if(!hasPractice&&!hasExams){alert('Todavía no hay progreso para restablecer.');return}
+  const next=stageHistory().length+1;
+  const msg=`¿Deseas restablecer tu progreso? Tu avance actual se guardará en el historial antes de comenzar nuevamente desde cero.`;
+  if(!confirm(msg))return;
+  try{
+    const snapshot=stageSnapshot();
+    const stages=stageHistory();stages.push(snapshot);saveStageHistory(stages);
+    if(window.archiveAndResetCurrentStage) await window.archiveAndResetCurrentStage(snapshot);
+
+    S={fav:[],status:{},attempts:{}};
+    localStorage.setItem(K,JSON.stringify(S));
+    localStorage.removeItem(EK);
+    counts();renderStageHistory();
+    alert(`Progreso restablecido. Tu avance anterior quedó guardado en el historial.`);
+  }catch(err){
+    console.error(err);
+    alert('No se pudo guardar la etapa completa. No se restableció el progreso. Revisa la conexión e inténtalo nuevamente.');
+  }
+};
 counts();

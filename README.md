@@ -1,16 +1,26 @@
-# Simulador de Ascenso EBR Inicial — V5.3
+# Simulador de Ascenso EBR Inicial — V5.3.1
 
-Cambios principales:
-- Estadísticas de práctica separadas del modo examen.
-- Práctica: Respondidas, % al primer intento, Reintentadas y Favoritas.
-- Examen: no muestra corrección ni explicación durante el intento.
-- Resultado del examen al entregar: correctas, incorrectas, porcentaje y tiempo.
-- Historial de exámenes separado; los errores de examen no alteran las estadísticas de práctica.
-- Si se selecciona una prueba concreta, el examen usa sus 60 preguntas oficiales.
-- Si se selecciona “Todas”, crea un examen aleatorio de 60 preguntas.
-- El historial funciona localmente aun sin configurar la nueva tabla de Supabase.
-- `supabase-v5.3.sql` habilita la sincronización del historial de exámenes entre dispositivos.
+## Cambios
+- “Prueba” pasa a mostrarse como “Año” en la interfaz.
+- El botón visible sigue llamándose “Restablecer progreso”.
+- Antes de reiniciar, guarda una Etapa con:
+  - preguntas resueltas,
+  - aciertos al primer intento,
+  - reintentadas,
+  - favoritas,
+  - estado completo de práctica,
+  - historial y mejor resultado de exámenes.
+- Después de guardar la etapa, práctica e historial activo de exámenes comienzan desde cero.
+- Los avances anteriores permanecen visibles en “Historial de progreso”.
+- Con sesión iniciada, las etapas se guardan en Supabase.
+- No se elimina la cuenta Auth ni el banco de preguntas.
 
-Para publicar en GitHub Pages, reemplazar:
-index.html, styles.css, app.js, cloud.js, questions.js.
-El archivo SQL NO se sube al sitio: se ejecuta una vez en Supabase > SQL Editor.
+## Publicación
+Subir a GitHub: index.html, styles.css, app.js, cloud.js y questions.js.
+
+## Supabase
+Ejecutar una vez `supabase-v5.3.1-etapas.sql` en SQL Editor.
+La tabla `exam_sessions` de V5.3 debe mantenerse.
+
+### Terminología de la interfaz
+El sistema interno usa registros/etapas para conservar cada ciclo de estudio, pero esa terminología no se muestra a Mara. La interfaz usa únicamente “Restablecer progreso”, “Historial de progreso” y “Progreso 1, 2, 3…”.

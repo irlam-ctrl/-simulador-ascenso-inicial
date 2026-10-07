@@ -28,7 +28,7 @@ function mergeCloud(rows){
 }
 async function pullCloud(){const u=window.cloudSync.user;if(!u)return;const {data,error}=await cloudClient.from('user_progress').select('*').eq('user_id',u.id);if(error)throw error;mergeCloud(data);return data||[]}
 async function pushCloud(){const u=window.cloudSync.user;if(!u)return;const rows=localRows(u.id);if(!rows.length)return;const {error}=await cloudClient.from('user_progress').upsert(rows,{onConflict:'user_id,question_id'});if(error)throw error}
-async function syncAll(label='Sincronizado'){if(window.cloudSync.busy||!window.cloudSync.user)return;window.cloudSync.busy=true;const e=cloudEls();e.badge.textContent='Sincronizando…';try{await pushCloud();await pullCloud();if(window.syncExamHistory)await window.syncExamHistory();e.badge.textContent='Nube activa';e.badge.className='syncBadge synced';e.text.textContent=label+' · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'})}catch(err){e.badge.textContent='Pendiente';e.badge.className='syncBadge pending';e.text.textContent='Guardado local. La nube reintentará cuando haya conexión.';console.error(err)}finally{window.cloudSync.busy=false}}
+async function syncAll(label='Sincronizado'){if(window.cloudSync.busy||!window.cloudSync.user)return;window.cloudSync.busy=true;const e=cloudEls();e.badge.textContent='Sincronizando…';try{await pushCloud();await pullCloud();if(window.syncExamHistory)await window.syncExamHistory();if(window.syncStageHistory){try{await window.syncStageHistory()}catch(_){}}e.badge.textContent='Nube activa';e.badge.className='syncBadge synced';e.text.textContent=label+' · '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'})}catch(err){e.badge.textContent='Pendiente';e.badge.className='syncBadge pending';e.text.textContent='Guardado local. La nube reintentará cuando haya conexión.';console.error(err)}finally{window.cloudSync.busy=false}}
 window.syncProgress=()=>syncAll();
 
 async function initCloud(){
@@ -66,3 +66,107 @@ async function pushExamHistory(){
   if(error)return;
 }
 window.syncExamHistory=async()=>{await pushExamHistory();await pullExamHistory()};
+
+
+/* V5.3.1 — restablecimiento total y seguro del usuario actual.
+   Borra primero Supabase y solo después limpia la copia local, evitando
+   que una sincronización posterior restaure el progreso anterior. */
+window.resetAllProgress = async function(){
+  const u = window.cloudSync && window.cloudSync.user;
+
+  if(u){
+    const progressDelete = await cloudClient
+      .from('user_progress')
+      .delete()
+      .eq('user_id', u.id);
+    if(progressDelete.error) throw progressDelete.error;
+
+    const examsDelete = await cloudClient
+      .from('exam_sessions')
+      .delete()
+      .eq('user_id', u.id);
+    if(examsDelete.error) throw examsDelete.error;
+  }
+
+  localStorage.setItem('maraAscenso360v2', JSON.stringify({
+    fav: [],
+    status: {},
+    attempts: {}
+  }));
+  localStorage.removeItem('maraAscensoExamHistoryV1');
+
+  if(window.reloadStudyState) window.reloadStudyState(false);
+  if(window.reloadExamHistory) window.reloadExamHistory();
+
+  // No se llama pushCloud/syncProgress aquí: primero dejamos ambas
+  // fuentes vacías para impedir que reaparezcan datos antiguos.
+  const syncText = document.querySelector('#syncText');
+  if(syncText && u){
+    syncText.textContent = 'Progreso restablecido · ' +
+      new Date().toLocaleTimeString('es-PE', {
+        hour:'2-digit', minute:'2-digit', second:'2-digit'
+      });
+  }
+};
+
+
+/* V5.3.1 ETAPAS
+   El restablecimiento ya no destruye el historial: archiva una instantánea
+   y después limpia solamente la etapa activa. */
+function localStageRows(userId){
+  let h=[];try{h=JSON.parse(localStorage.getItem('maraAscensoStageHistoryV1')||'[]')}catch{}
+  return h.map(x=>({
+    id:x.id,user_id:userId,stage_number:x.number,saved_at:x.savedAt,
+    attempted:x.attempted,resolved:x.resolved,first_try:x.firstTry,
+    retried:x.retried,first_try_percent:x.firstTryPercent,
+    favorites:x.favorites,exam_count:x.examCount,best_exam:x.bestExam,
+    practice_state:x.practiceState||{},exams:x.exams||[]
+  }));
+}
+async function pushStageHistory(){
+  const u=window.cloudSync&&window.cloudSync.user;if(!u)return;
+  const rows=localStageRows(u.id);if(!rows.length)return;
+  const {error}=await cloudClient.from('study_stages').upsert(rows,{onConflict:'id'});
+  if(error)throw error;
+}
+async function pullStageHistory(){
+  const u=window.cloudSync&&window.cloudSync.user;if(!u)return;
+  const {data,error}=await cloudClient.from('study_stages').select('*').eq('user_id',u.id).order('stage_number',{ascending:true});
+  if(error)return;
+  let local=[];try{local=JSON.parse(localStorage.getItem('maraAscensoStageHistoryV1')||'[]')}catch{}
+  const map=new Map(local.map(x=>[x.id,x]));
+  for(const r of data||[])map.set(r.id,{
+    id:r.id,number:r.stage_number,savedAt:r.saved_at,attempted:r.attempted,
+    resolved:r.resolved,firstTry:r.first_try,retried:r.retried,
+    firstTryPercent:r.first_try_percent,favorites:r.favorites,
+    examCount:r.exam_count,bestExam:r.best_exam,
+    practiceState:r.practice_state||{},exams:r.exams||[]
+  });
+  localStorage.setItem('maraAscensoStageHistoryV1',JSON.stringify([...map.values()]));
+  if(window.reloadStageHistory)window.reloadStageHistory();
+}
+window.syncStageHistory=async()=>{await pushStageHistory();await pullStageHistory()};
+
+window.archiveAndResetCurrentStage=async function(snapshot){
+  const u=window.cloudSync&&window.cloudSync.user;
+  if(u){
+    // Archive must succeed BEFORE deleting active progress.
+    const row={
+      id:snapshot.id,user_id:u.id,stage_number:snapshot.number,saved_at:snapshot.savedAt,
+      attempted:snapshot.attempted,resolved:snapshot.resolved,first_try:snapshot.firstTry,
+      retried:snapshot.retried,first_try_percent:snapshot.firstTryPercent,
+      favorites:snapshot.favorites,exam_count:snapshot.examCount,best_exam:snapshot.bestExam,
+      practice_state:snapshot.practiceState||{},exams:snapshot.exams||[]
+    };
+    const archived=await cloudClient.from('study_stages').upsert(row,{onConflict:'id'});
+    if(archived.error)throw archived.error;
+
+    const p=await cloudClient.from('user_progress').delete().eq('user_id',u.id);
+    if(p.error)throw p.error;
+    const e=await cloudClient.from('exam_sessions').delete().eq('user_id',u.id);
+    if(e.error)throw e.error;
+  }
+  localStorage.setItem('maraAscenso360v2',JSON.stringify({fav:[],status:{},attempts:{}}));
+  localStorage.removeItem('maraAscensoExamHistoryV1');
+};
+window.reloadStageHistory=()=>{if(typeof renderStageHistory==='function')renderStageHistory()};
