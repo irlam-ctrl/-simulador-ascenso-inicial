@@ -229,7 +229,11 @@ $('#check').onclick=()=>{
   if(good){
     S.status[x.id]={result:'correct',selected:chosen,hadWrong:S.attempts[x.id].some(a=>!a.correct)};save();
     document.querySelectorAll('.option').forEach((b,n)=>{b.disabled=true;if(n===x.a)b.classList.add('correct')});
-    $('#feedback').innerHTML=`<b>Correcto ✓</b><br>${x.why}`;$('#feedback').classList.remove('hidden');$('#next').classList.add('hidden');$('#check').classList.add('hidden');
+    const explanation=String(x.why||'').replace(/(?:^|\n)\s*Idea clave para el examen\s*[:：–-]?\s*/gi,'').trim();
+    $('#feedback').innerHTML=`<b>Correcto ✓</b>${explanation?'<br>'+explanation:''}`;
+    $('#feedback').classList.remove('hidden');
+    $('#next').textContent=i+1<pool.length?'Siguiente pregunta →':'Finalizar práctica';
+    $('#next').classList.remove('hidden');$('#check').classList.add('hidden');
   }else{
     S.status[x.id]={result:'wrong',selected:chosen};save();
     // Registrar el fallo sin dejar marcas visuales ni bloquear ninguna opción.
@@ -239,7 +243,15 @@ $('#check').onclick=()=>{
   }
   counts();setBanner(x);updateNavigator();
 };
-$('#next').onclick=()=>{if(i+1>=pool.length){alert('Terminaste esta práctica.');return}i++;render()};
+$('#next').onclick=()=>{
+  if(mode!=='practice')return;
+  if(i+1>=pool.length){
+    $('#navigator').classList.add('hidden');$('#quiz').classList.add('hidden');
+    $('#config').classList.remove('hidden');counts();window.scrollTo({top:0,behavior:'smooth'});return;
+  }
+  i++;render();
+  window.scrollTo({top:$('#meta').getBoundingClientRect().top+window.scrollY-12,behavior:'smooth'});
+};
 $('#finishExam').onclick=()=>finishExam(false);
 $('#closeExamResult').onclick=()=>{$('#examResult').classList.add('hidden');$('#config').classList.remove('hidden');mode='practice';counts()};
 $('#fav').onclick=()=>{let id=pool[i].id,n=S.fav.indexOf(id);n>=0?S.fav.splice(n,1):S.fav.push(id);save();$('#fav').textContent=S.fav.includes(id)?'★':'☆';counts();updateNavigator()};
