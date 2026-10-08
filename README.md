@@ -1,1 +1,1 @@
-V5.4.7: En inicio de sesión, el campo de correo muestra el texto «Correo» en lugar de «Correo de Mara». Mantiene todas las funciones de V5.4.6.
+V5.4.8: elimina íntegramente el bloque «💡 Idea clave para el examen» y su párrafo de las 360 explicaciones. Mantiene las justificaciones de A/B/C, el botón siguiente y las funciones de V5.4.7. Sin cambios en cloud.js ni app.js.
