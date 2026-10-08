@@ -161,8 +161,8 @@ function render(){
   $('#meta').textContent=`Año ${x.year} · Pregunta ${x.number}`;
   $('#question').textContent=x.q;
   if(mode==='practice'){
-    const triedWrong=new Set(attemptsOf(x.id).filter(a=>!a.correct).map(a=>a.selected));
-    $('#options').innerHTML=x.o.map((v,n)=>`<button class="option ${triedWrong.has(n)?'wrong tried':''}" data-n="${n}"><b>${'ABC'[n]}.</b> ${v}</button>`).join('');
+    // No revelar ni descartar alternativas tras errores previos.
+    $('#options').innerHTML=x.o.map((v,n)=>`<button class="option" data-n="${n}"><b>${'ABC'[n]}.</b> ${v}</button>`).join('');
     $('#check').textContent='Comprobar respuesta';$('#check').classList.remove('hidden');$('#check').disabled=true;
     $('#finishExam').classList.add('hidden');$('#next').classList.add('hidden');$('#feedback').classList.add('hidden');
   }else{
@@ -232,8 +232,9 @@ $('#check').onclick=()=>{
     $('#feedback').innerHTML=`<b>Correcto ✓</b><br>${x.why}`;$('#feedback').classList.remove('hidden');$('#next').classList.add('hidden');$('#check').classList.add('hidden');
   }else{
     S.status[x.id]={result:'wrong',selected:chosen};save();
-    const b=document.querySelector(`.option[data-n="${chosen}"]`);if(b)b.classList.add('wrong','tried');
-    document.querySelectorAll('.option').forEach(z=>z.classList.remove('selected'));chosen=null;$('#check').disabled=true;
+    // Registrar el fallo sin dejar marcas visuales ni bloquear ninguna opción.
+    document.querySelectorAll('.option').forEach(z=>z.classList.remove('selected','wrong','tried','correct'));
+    chosen=null;$('#check').disabled=true;
     $('#feedback').innerHTML='<b>Incorrecta ✕</b><br>Vuelve a leer la pregunta y prueba otra alternativa. La clave y la explicación se mostrarán cuando encuentres la respuesta correcta.';$('#feedback').classList.remove('hidden');
   }
   counts();setBanner(x);updateNavigator();

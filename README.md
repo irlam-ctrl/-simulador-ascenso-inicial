@@ -1,11 +1,11 @@
-# Simulador V5.4.4
+# V5.4.5 — Respuestas erróneas sin pistas
 
-Corrección del desfase del navegador:
-- Se identificó la causa real del error de V5.4.3.
-- En el primer render, el botón central reemplazaba sus spans internos por texto.
-- En el segundo render, JavaScript intentaba actualizar esos spans ya eliminados y se detenía.
-- Por eso arriba podía aparecer “2 de 60” mientras el botón y la cuadrícula seguían en “1”.
-- Ahora el botón central se actualiza como una sola unidad y no depende de elementos internos que desaparecen.
-- El contador superior, botón central y cuadrícula usan el mismo índice `i`.
-- cloud.js y questions.js no se modificaron.
-- No requiere cambios en Supabase.
+Basada en la V5.4.4 estable.
+
+- Ante un error, se limpian todas las selecciones y marcas de las alternativas.
+- A, B y C siguen habilitadas; puede repetirse una alternativa.
+- Al volver a una pregunta fallada, tampoco se revelan los intentos previos.
+- Se conservan los registros de intentos y estadísticas, así como la explicación al acertar.
+- `questions.js` y `cloud.js` permanecen idénticos a V5.4.4.
+
+**Pendiente:** auditoría y corrección de cuentos y contextos compartidos. No se modifica el banco de preguntas sin validar los textos originales.
