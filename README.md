@@ -1,1 +1,11 @@
-V5.4.8: elimina íntegramente el bloque «💡 Idea clave para el examen» y su párrafo de las 360 explicaciones. Mantiene las justificaciones de A/B/C, el botón siguiente y las funciones de V5.4.7. Sin cambios en cloud.js ni app.js.
+# Simulador Mara V5.4.9
+
+Base: V5.4.8. Corrección puntual, contrastada con las capturas del examen 2019:
+- P8: la alternativa C termina en «¿Quién trae el recogedor?»; se separa el texto que corresponde a P9–P11.
+- P9–P11: situación del río en recuadro independiente, visible en cada pregunta.
+- P9: diálogo separado por personajes, preservando el texto original completo, incluida la última intervención de Maritza.
+- P11: nota dictada por los niños en recuadro separado; enunciado y alternativas sin alterar.
+- P10: se conserva el enunciado y sus alternativas, con el contexto general visible.
+- Claves, cloud.js, navegación, respuestas y estadísticas intactas.
+
+Pendiente: revisión sistemática de los demás contextos de los seis exámenes.

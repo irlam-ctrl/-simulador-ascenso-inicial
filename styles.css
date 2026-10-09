@@ -79,3 +79,11 @@
   #questionGrid button{min-height:58px}
   #questionGrid .gridOfficial{font-size:8px}
 }
+
+/* Textos originales de situaciones y diálogos (2019 P9–P11) */
+.examContext,.examDialogue,.examQuote{background:#edf3ef;border-radius:14px;padding:16px 18px;margin:16px 0;line-height:1.65;font-size:.93em;font-weight:400}
+.examContext strong{display:block;margin-bottom:8px;font-size:.92em}
+.examContext p,.examDialogue p{margin:0 0 9px}.examDialogue p:last-child,.examContext p:last-child{margin-bottom:0}
+.examDialogue{background:#f1f1ee}.examDialogue strong{font-weight:700}
+.examQuote{background:#e7e7e7;text-align:left;padding:20px 24px}
+#question>p{margin:12px 0;white-space:normal}

@@ -159,7 +159,20 @@ function render(){
   chosen=mode==='exam' && Number.isInteger(examAnswers[x.id])?examAnswers[x.id]:null;
   $('#progress').textContent=`${i+1} de ${pool.length}`;
   $('#meta').textContent=`Año ${x.year} · Pregunta ${x.number}`;
-  $('#question').textContent=x.q;
+  // Presentación de contextos y textos oficiales, sin modificar alternativas.
+  const escapeText=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const formatLines=t=>escapeText(t).replace(/\n/g,'<br>');
+  const contextBox=x.context?`<section class="examContext"><strong>Situación para las preguntas 9, 10 y 11</strong><p>${formatLines(x.context.replace(/^Lea la siguiente situación y responda las preguntas 9, 10 y 11\.\s*/,''))}</p></section>`:'';
+  if(x.id==='2019-9'){
+    const lines=x.q.split('\n');let intro=lines.shift();let dialogue=[],tail=[];
+    for(const line of lines){if(/^(Docente|Juana|Maritza):/.test(line)){dialogue.push(line)}else if(dialogue.length && !/^En esta situación/.test(line)){dialogue[dialogue.length-1]+=' '+line.trim()}else{tail.push(line)}}
+    $('#question').innerHTML=contextBox+`<p>${escapeText(intro)}</p><section class="examDialogue">`+dialogue.map(line=>{const m=line.match(/^(Docente|Juana|Maritza):\s*(.*)$/);return `<p><strong>${m[1]}:</strong> ${escapeText(m[2])}</p>`}).join('')+`</section><p>${formatLines(tail.join('\n'))}</p>`;
+  }else if(x.id==='2019-11'){
+    const marker='El río tiene basura.';const start=x.q.indexOf(marker);const end=x.q.indexOf('A continuación,',start);
+    if(start>=0&&end>start){$('#question').innerHTML=contextBox+`<p>${formatLines(x.q.slice(0,start).trim())}</p><section class="examQuote">${formatLines(x.q.slice(start,end).trim())}</section><p>${formatLines(x.q.slice(end).trim())}</p>`}
+    else{$('#question').innerHTML=contextBox+`<p>${formatLines(x.q)}</p>`}
+  }else{$('#question').innerHTML=contextBox+`<p>${formatLines(x.q)}</p>`}
+
   if(mode==='practice'){
     // No revelar ni descartar alternativas tras errores previos.
     $('#options').innerHTML=x.o.map((v,n)=>`<button class="option" data-n="${n}"><b>${'ABC'[n]}.</b> ${v}</button>`).join('');
