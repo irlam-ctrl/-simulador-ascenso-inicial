@@ -158,7 +158,7 @@ function render(){
   const x=pool[i];if(!x)return;
   chosen=mode==='exam' && Number.isInteger(examAnswers[x.id])?examAnswers[x.id]:null;
   $('#progress').textContent=`${i+1} de ${pool.length}`;
-  $('#meta').textContent=`Año ${x.year} · Pregunta ${x.number}`;
+  $('#meta').textContent=`${x.year.startsWith('Casuística')?x.year:`Año ${x.year}`} · Pregunta ${x.number}`;
   // Presentación de contextos y textos oficiales, sin modificar alternativas.
   const escapeText=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const formatLines=t=>escapeText(t).replace(/\n/g,'<br>');
@@ -172,6 +172,8 @@ function render(){
     if(start>=0&&end>start){$('#question').innerHTML=contextBox+`<p>${formatLines(x.q.slice(0,start).trim())}</p><section class="examQuote">${formatLines(x.q.slice(start,end).trim())}</section><p>${formatLines(x.q.slice(end).trim())}</p>`}
     else{$('#question').innerHTML=contextBox+`<p>${formatLines(x.q)}</p>`}
   }else{$('#question').innerHTML=contextBox+`<p>${formatLines(x.q)}</p>`}
+
+  if(x.images?.length){$('#question').innerHTML+=x.images.map(src=>`<img src="${src}" alt="Ilustración de la pregunta" style="display:block;max-width:100%;height:auto;margin:1rem auto;border-radius:8px">`).join('')}
 
   if(mode==='practice'){
     // No revelar ni descartar alternativas tras errores previos.
@@ -216,7 +218,7 @@ function finishExam(auto=false){
   clearInterval(tick);
   const correct=pool.filter(q=>examAnswers[q.id]===q.a).length,total=pool.length,incorrect=total-correct;
   const elapsed=Math.min(10800,Math.max(0,Math.round((Date.now()-examStartedAt)/1000)));
-  const y=selectedYear(),label=y?`Año ${y}`:'Examen aleatorio';
+  const y=selectedYear(),label=y?(y.startsWith('Casuística')?y:`Año ${y}`):'Examen aleatorio';
   const record={id:`exam-${Date.now()}`,label,correct,incorrect,total,percent:Math.round(correct/total*100),elapsed,finishedAt:new Date().toISOString(),answers:examAnswers};
   const h=examHistory();h.push(record);saveExamHistory(h);
   // Los errores del examen se guardan aparte: no modifican estadísticas de práctica.
