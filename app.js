@@ -162,16 +162,17 @@ function render(){
   // Presentación de contextos y textos oficiales, sin modificar alternativas.
   const escapeText=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const formatLines=t=>escapeText(t).replace(/\n/g,'<br>');
+  const extraImages=(x.contextImages||[]).map(src=>`<img src="${src}" alt="Contexto visual de la casuística" style="max-width:100%;height:auto;display:block;margin:12px auto">`).join('');
   const contextBox=x.context?`<section class="examContext"><strong>Situación para las preguntas 9, 10 y 11</strong><p>${formatLines(x.context.replace(/^Lea la siguiente situación y responda las preguntas 9, 10 y 11\.\s*/,''))}</p></section>`:'';
   if(x.id==='2019-9'){
     const lines=x.q.split('\n');let intro=lines.shift();let dialogue=[],tail=[];
     for(const line of lines){if(/^(Docente|Juana|Maritza):/.test(line)){dialogue.push(line)}else if(dialogue.length && !/^En esta situación/.test(line)){dialogue[dialogue.length-1]+=' '+line.trim()}else{tail.push(line)}}
-    $('#question').innerHTML=contextBox+`<p>${escapeText(intro)}</p><section class="examDialogue">`+dialogue.map(line=>{const m=line.match(/^(Docente|Juana|Maritza):\s*(.*)$/);return `<p><strong>${m[1]}:</strong> ${escapeText(m[2])}</p>`}).join('')+`</section><p>${formatLines(tail.join('\n'))}</p>`;
+    $('#question').innerHTML=extraImages+contextBox+`<p>${escapeText(intro)}</p><section class="examDialogue">`+dialogue.map(line=>{const m=line.match(/^(Docente|Juana|Maritza):\s*(.*)$/);return `<p><strong>${m[1]}:</strong> ${escapeText(m[2])}</p>`}).join('')+`</section><p>${formatLines(tail.join('\n'))}</p>`;
   }else if(x.id==='2019-11'){
     const marker='El río tiene basura.';const start=x.q.indexOf(marker);const end=x.q.indexOf('A continuación,',start);
-    if(start>=0&&end>start){$('#question').innerHTML=contextBox+`<p>${formatLines(x.q.slice(0,start).trim())}</p><section class="examQuote">${formatLines(x.q.slice(start,end).trim())}</section><p>${formatLines(x.q.slice(end).trim())}</p>`}
-    else{$('#question').innerHTML=contextBox+`<p>${formatLines(x.q)}</p>`}
-  }else{$('#question').innerHTML=contextBox+`<p>${formatLines(x.q)}</p>`}
+    if(start>=0&&end>start){$('#question').innerHTML=extraImages+contextBox+`<p>${formatLines(x.q.slice(0,start).trim())}</p><section class="examQuote">${formatLines(x.q.slice(start,end).trim())}</section><p>${formatLines(x.q.slice(end).trim())}</p>`}
+    else{$('#question').innerHTML=extraImages+contextBox+`<p>${formatLines(x.q)}</p>`}
+  }else{$('#question').innerHTML=extraImages+contextBox+`<p>${formatLines(x.q)}</p>`}
 
   if(x.images?.length){$('#question').innerHTML+=x.images.map(src=>`<img src="${src}" alt="Ilustración de la pregunta" style="display:block;max-width:100%;height:auto;margin:1rem auto;border-radius:8px">`).join('')}
 
