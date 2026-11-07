@@ -1,1 +1,1 @@
-V5.4.15: se agregan al selector Casuistica 21, 23 y 02-25. Banco de preguntas y sincronizacion sin cambios.
+V5.4.17: incluye imagen pedagógica original de la pregunta 17 de Prueba simulacro. Se excluye la marca de agua diagonal del documento. Mantiene 610 preguntas y sincronización existente.
